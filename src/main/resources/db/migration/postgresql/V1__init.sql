@@ -1,0 +1,31 @@
+CREATE TABLE IF NOT EXISTS account(
+	id SERIAL,
+	user_name VARCHAR(100) NOT NULL,
+	email VARCHAR(100) NOT NULL,
+	password VARCHAR NOT NULL,
+	first_name VARCHAR(100),
+	last_name VARCHAR(200),
+	document VARCHAR(30),
+	birthday DATE,
+	type INTEGER DEFAULT 0,
+	active BOOLEAN DEFAULT TRUE,
+	created_at TIMESTAMP,
+	updated_at TIMESTAMP,
+	deleted_at TIMESTAMP,
+PRIMARY KEY(id));
+
+CREATE TABLE IF NOT EXISTS forgot_password(
+	id SERIAL,
+	account INTEGER NOT NULL,
+	token VARCHAR NOT NULL,
+	created_at TIMESTAMP,
+PRIMARY KEY(id));
+
+CREATE TABLE IF NOT EXISTS send_email(
+	id SERIAL,
+	to_email VARCHAR NOT NULL,
+	from_email VARCHAR NOT NULL,
+	subject VARCHAR NOT NULL,
+	text VARCHAR NOT NULL,
+	sent BOOLEAN DEFAULT FALSE NOT NULL,
+PRIMARY KEY(id));
