@@ -11,7 +11,6 @@ CREATE TABLE IF NOT EXISTS account(
 	active BOOLEAN DEFAULT TRUE,
 	created_at TIMESTAMP,
 	updated_at TIMESTAMP,
-	deleted_at TIMESTAMP,
 PRIMARY KEY(id));
 
 CREATE TABLE IF NOT EXISTS forgot_password(

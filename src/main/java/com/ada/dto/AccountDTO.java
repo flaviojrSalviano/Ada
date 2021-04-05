@@ -1,5 +1,6 @@
 package com.ada.dto;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import javax.validation.constraints.NotNull;
@@ -8,7 +9,6 @@ import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.Data;
 
@@ -44,4 +44,10 @@ public class AccountDTO {
 	private Integer type;
 	
 	private Boolean active;
+	
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss[.SSS][.SS][.S]")
+	private LocalDateTime  createdAt;
+	
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss[.SSS][.SS][.S]")
+	private LocalDateTime  updatedAt;
 }

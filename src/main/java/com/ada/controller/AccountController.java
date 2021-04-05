@@ -1,6 +1,7 @@
 package com.ada.controller;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -12,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -33,8 +33,6 @@ import com.ada.service.AccountService;
 import com.ada.service.ForgotPasswordService;
 import com.ada.service.SendEmailService;
 import com.ada.util.Bcrypt;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.annotation.JsonAppend;
 
 @RestController
 @RequestMapping("account")
@@ -95,6 +93,7 @@ public class AccountController {
 		ac.setLastName(dto.getLastName());
 		ac.setDocument(dto.getDocument());
 		ac.setBirthday(dto.getBirthday());
+		ac.setUpdatedAt(LocalDateTime.now());
 		
 		service.save(ac);
 		
@@ -110,6 +109,7 @@ public class AccountController {
 		}
 		
 		a.get().setActive(false);
+		a.get().setUpdatedAt(LocalDateTime.now());
 		
 		service.save(a.get());
 		
@@ -132,6 +132,7 @@ public class AccountController {
 		ForgotPassword fp = new ForgotPassword();
 		fp.setAccount(a.get());
 		fp.setToken(token);
+		fp.setCreatedAt(LocalDateTime.now());
 		
 		forgotPasswordService.save(fp);
 		
@@ -150,13 +151,15 @@ public class AccountController {
 	}
 	
 	@PostMapping("/reset")
-	public ResponseEntity<Response<String>> disable(@RequestParam Map<String, String> requestParams){
+	public ResponseEntity<Response<String>> resetPassword(@RequestParam Map<String, String> requestParams){
 		Response<String> response = new Response<String>();
 		
 		if(requestParams.get("token") == null || requestParams.get("new_password") == null) {
 			response.getErrors().add("Dados inválido");
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		}
+		
+		forgotPasswordService.deleteOldForgotPassword();
 		
 		Optional<ForgotPassword> fp = forgotPasswordService.findByToken(requestParams.get("token"));
 		
@@ -168,6 +171,7 @@ public class AccountController {
 		Optional<Account> a = service.findById(fp.get().getAccount().getId());
 		
 		a.get().setPassword(Bcrypt.getHash(requestParams.get("new_password")));
+		a.get().setUpdatedAt(LocalDateTime.now());
 		
 		service.save(a.get());
 		
@@ -189,6 +193,7 @@ public class AccountController {
 		a.setBirthday(dto.getBirthday());
 		a.setType(dto.getType());
 		a.setActive(dto.getActive());
+		a.setCreatedAt(LocalDateTime.now());
 		
 		return a;
 	}
@@ -205,6 +210,7 @@ public class AccountController {
 		dto.setBirthday(a.getBirthday());
 		dto.setType(a.getType());
 		dto.setActive(a.getActive());
+		dto.setCreatedAt(LocalDateTime.now());
 		
 		return dto;
 	}

@@ -5,7 +5,6 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.ada.entity.Account;
 import com.ada.entity.ForgotPassword;
 import com.ada.repository.ForgotPasswordRepository;
 import com.ada.service.ForgotPasswordService;
@@ -34,6 +33,11 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService{
 	@Override
 	public void deleteByAccount(Long id) {
 		repository.deleteByAccount(id);
+	}
+
+	@Override
+	public void deleteOldForgotPassword() {
+		repository.deleteOldForgotPassword();
 	}
 
 }

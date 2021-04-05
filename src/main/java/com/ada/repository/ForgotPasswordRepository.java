@@ -17,4 +17,9 @@ public interface ForgotPasswordRepository extends JpaRepository<ForgotPassword, 
 	@Modifying
 	@Query(value = "delete from ForgotPassword f where f.account.id = :account")
 	void deleteByAccount(@Param("account") Long account);
+	
+	@Transactional
+	@Modifying
+	@Query(value = "delete from forgot_password f where f.created_at < (CURRENT_TIMESTAMP - INTERVAL '5 MINUTES')", nativeQuery = true)
+	void deleteOldForgotPassword();
 }

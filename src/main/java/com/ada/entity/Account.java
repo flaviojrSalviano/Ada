@@ -1,6 +1,7 @@
 package com.ada.entity;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -49,4 +50,10 @@ public class Account implements Serializable{
 	private Integer type;
 	
 	private Boolean active;
+	
+	@Column(nullable = true, name = "created_at")
+	private LocalDateTime  createdAt;
+	
+	@Column(nullable = true, name = "updated_at")
+	private LocalDateTime  updatedAt;
 }

@@ -2,7 +2,6 @@ package com.ada.service;
 
 import java.util.Optional;
 
-import com.ada.entity.Account;
 import com.ada.entity.ForgotPassword;
 
 public interface ForgotPasswordService {
@@ -13,4 +12,6 @@ public interface ForgotPasswordService {
 	void deleteById(Long id);
 	
 	void deleteByAccount(Long id);
+	
+	void deleteOldForgotPassword();
 }
