@@ -63,28 +63,30 @@ public class AccountController {
 	}
 	
 	@PostMapping
-	public ResponseEntity<Response<AccountDTO>> create(@Valid @RequestBody AccountDTO dto, BindingResult result){
+	public ResponseEntity<Response<Object>> create(@Valid @RequestBody AccountDTO dto, BindingResult result){
 		
-		Response<AccountDTO> response = new Response<AccountDTO>();
+		Response<Object> response = new Response<Object>();
 		
 		if(result.hasErrors()) {
 			result.getAllErrors().forEach(e -> response.getErrors().add(e.getDefaultMessage()));
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		}
 		
-		Account account = service.save(this.convertDtoToEntity(dto));
+		Account n = new Account();
+		n = this.convertDtoToEntity(dto);
+		n.setActive(true);
 		
-		response.setData(this.convertEntityToDto(account));
-		
-		return ResponseEntity.status(HttpStatus.CREATED).body(response);
+		service.save(n);
+
+		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 	
 	@PutMapping("/{account}")
-	public ResponseEntity<Response<String>> update(@PathVariable("account") Long account, @RequestBody AccountDTO dto, BindingResult result){
+	public ResponseEntity<Response<Object>> update(@PathVariable("account") Long account, @RequestBody AccountDTO dto, BindingResult result){
 		Optional<Account> a = service.findById(account);
 		
 		if(!a.isPresent()) {
-			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 		}
 		
 		Account ac = a.get();
@@ -97,15 +99,15 @@ public class AccountController {
 		
 		service.save(ac);
 		
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 	
 	@PatchMapping("/disable/{id}")
-	public ResponseEntity<Response<String>> disable(@PathVariable("id") Long id){
+	public ResponseEntity<Response<Object>> disable(@PathVariable("id") Long id){
 		Optional<Account> a = service.findById(id);
 		
 		if(!a.isPresent()) {
-			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 		}
 		
 		a.get().setActive(false);
@@ -113,16 +115,16 @@ public class AccountController {
 		
 		service.save(a.get());
 		
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 	
 	@PostMapping("/forgot")
-	public ResponseEntity<String> forgotPassword(@RequestBody AccountDTO  account, HttpServletRequest request){
+	public ResponseEntity<Object> forgotPassword(@RequestBody Map<String, String>  JsonObj, HttpServletRequest request){
 		
-		Optional<Account> a = service.findByEmail(account.getEmail());
+		Optional<Account> a = service.findByEmail(JsonObj.get("email"));
 		
 		if(!a.isPresent()) {
-			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 		}
 		
 		forgotPasswordService.deleteByAccount(a.get().getId());
@@ -147,14 +149,16 @@ public class AccountController {
 		
 		sendEmailService.save(se);
 		
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 	
 	@PostMapping("/reset")
-	public ResponseEntity<Response<String>> resetPassword(@RequestParam Map<String, String> requestParams){
+	public ResponseEntity<Response<String>> resetPassword(@RequestBody Map<String, String> requestParams){
 		Response<String> response = new Response<String>();
+		String new_pass = requestParams.get("new_password");
+		new_pass = new_pass.trim();
 		
-		if(requestParams.get("token") == null || requestParams.get("new_password") == null) {
+		if(requestParams.get("token") == null || new_pass == null || new_pass.isEmpty() || new_pass.length() < 6) {
 			response.getErrors().add("Dados inválido");
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		}

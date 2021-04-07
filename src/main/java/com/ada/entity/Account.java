@@ -29,10 +29,8 @@ public class Account implements Serializable{
 	@Column(name = "user_name")
 	private String userName;
 	
-	@NotNull
 	private String email;
 	
-	@NotNull
 	private String password;
 	
 	@Column(nullable = true, name = "first_name")

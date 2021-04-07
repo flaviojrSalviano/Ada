@@ -9,6 +9,7 @@ import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
 
@@ -26,6 +27,7 @@ public class AccountDTO {
 	private String email;
 	
 	@NotNull
+	@JsonIgnore
 	@Length(min=6, message="A senha deve conter no mínimo 6 caracteres")
 	private String password;
 	
@@ -43,6 +45,7 @@ public class AccountDTO {
 	
 	private Integer type;
 	
+	@JsonIgnore
 	private Boolean active;
 	
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss[.SSS][.SS][.S]")
